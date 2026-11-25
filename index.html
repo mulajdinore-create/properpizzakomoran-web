@@ -182,17 +182,10 @@ footer{border-top:1px solid #1C2027;background:#090B0E;padding:44px 0 24px;font-
 <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:18px;max-width:480px">
 <span class="eyebrow">Kafe Lavazza</span>
 <h2 class="disp" style="margin:0;font-size:clamp(44px,6vw,60px)">Fillo ditën<br>te Proper</h2>
-<p style="margin:0;font-size:18px;line-height:1.6;color:var(--muted)">Te ne gjen edhe kafen Lavazza – espresso, makiato e cappuccino – bashkë me ofertën e mëngjesit. Kafeja shërbehet çdo ditë nga ora 07:00.</p>
-<div class="card" style="flex-direction:row;align-items:center;gap:16px;padding:18px 20px;border-color:#5A3A1C">
-<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:1px">Oferta e mëngjesit</div><div class="disp" style="font-size:30px;margin-top:4px">Kafe &amp; Kroasan</div></div>
-<b class="disp" style="font-size:40px;color:var(--orange)">1.99€</b>
+<p style="margin:0;font-size:18px;line-height:1.6;color:var(--muted)">Te ne gjen edhe kafen Lavazza – espresso, makiato e cappuccino. Kafeja shërbehet çdo ditë nga ora 07:00.</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px"><button type="button" class="btn btn-o" data-t="nxehta" data-go="1">Shiko pijet e nxehta</button></div>
 </div>
-<div style="display:flex;flex-wrap:wrap;gap:12px"><button type="button" class="btn btn-o" id="addBreakfast">+ Shto në porosi</button><button type="button" class="btn btn-g" data-t="nxehta" data-go="1">Shiko pijet e nxehta</button></div>
-</div>
-<div style="flex:1 1 400px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:520px">
-<div style="aspect-ratio:9/16;border-radius:22px;overflow:hidden;border:5px solid #1F232B;box-shadow:0 24px 50px rgba(0,0,0,.5);background:#14171C"><video src="img/espresso.mp4" poster="img/espresso.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Espresso Lavazza duke u derdhur në filxhan" style="width:100%;height:100%;object-fit:cover;display:block"></video></div>
-<div style="aspect-ratio:9/16;border-radius:22px;overflow:hidden;border:5px solid #1F232B;box-shadow:0 24px 50px rgba(0,0,0,.5);background:#14171C;margin-top:48px"><video src="img/mengjesi.mp4" poster="img/mengjesi.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Oferta e mëngjesit: kafe dhe kroasan 1.99 euro" style="width:100%;height:100%;object-fit:cover;display:block"></video></div>
-</div>
+<div style="flex:0 1 300px;width:100%;max-width:300px"><div style="aspect-ratio:9/16;border-radius:22px;overflow:hidden;border:5px solid #1F232B;box-shadow:0 24px 50px rgba(0,0,0,.5);background:#14171C"><video src="img/espresso.mp4" poster="img/espresso.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Espresso Lavazza duke u derdhur në filxhan" style="width:100%;height:100%;object-fit:cover;display:block"></video></div></div>
 </div></section>
 
 <section class="s" id="te-preferuarat"><div class="wrap">
@@ -284,7 +277,7 @@ var PIZZAS=[
 ['Nutella','Nutella, dredhëza, banane','nutella',['3.50','7.50','10.50','19.00']]];
 var SAND=[['Sandwich Proper','Proshutë, suxhuk, djathë','sandwich','2.50'],['Sandwich Proshutë','Proshutë, djathë','proshute','2.80'],['Sandwich Peperoni','Suxhuk, djathë','sugjuk','2.80'],['Sandwich Tuna','Tuna, djathë','tuna-s','3.00']];
 var DRINKS=[['Coca Cola 0.33L','1.50'],['Coca Cola Zero 0.33L','1.50'],['Coca Cola 1.25L','1.80'],['Fanta 0.33L','1.50'],['Fanta Exotic 0.33L','1.50'],['Sprite 0.33L','1.50'],['Schweppes 0.33L','1.50'],['Ice Tea 0.33L','1.50'],['Tonic 0.33L','1.50'],['Laqin 0.25L','1.00'],['Ujë natyral 0.25L','1.00'],['Ujë natyral 1L','2.00'],['Ujë mineral 0.25L','1.00'],['Ujë mineral 1L','2.00'],['Golden Eagle','1.50'],['Red Bull','3.00'],['Lëngje të ndryshme','1.50']];
-var HOT=[['Kafe & Kroasan (oferta e mëngjesit)','1.99'],['Espresso','1.00'],['Double Espresso','2.00'],['Makiato e vogël','1.00'],['Makiato e madhe','1.30'],['Pa plum','1.20'],['Ness Classic','1.30'],['Ness Vanille','1.30'],['Bambi','0.80'],['Cappuccino','1.30'],['Amerikane','1.20'],['Çaj','1.00'],['Çaj i zi','0.70'],['Çokollatë e nxehtë','1.30']];
+var HOT=[['Espresso','1.00'],['Double Espresso','2.00'],['Makiato e vogël','1.00'],['Makiato e madhe','1.30'],['Pa plum','1.20'],['Ness Classic','1.30'],['Ness Vanille','1.30'],['Bambi','0.80'],['Cappuccino','1.30'],['Amerikane','1.20'],['Çaj','1.00'],['Çaj i zi','0.70'],['Çokollatë e nxehtë','1.30']];
 var EXTRAS=[['djathe','Djathë ekstra',0.5],['suxhuk','Suxhuk',0.5],['pershute','Përshutë',0.5],['kerpudha','Kërpudha',0.3],['veze','Vezë',0.3],['ullinj','Ullinj',0.3]];
 var COMBOS=[['Kombo Solo','Pica Proper 30 cm + Coca Cola 0.33L','proper','6.50','7.00'],['Kombo Familja','Pica Proper 60 cm + Coca Cola 1.25L','macho','18.00','18.80'],['Kombo Sandwich','Sandwich Proper + Ice Tea 0.33L','sandwich','3.50','4.00']];
 
@@ -377,7 +370,6 @@ function renderAll(){renderFeatured();renderMenu();renderCart()}
 
 document.addEventListener('click',function(e){
   var b=e.target.closest('button');if(!b)return;var d=b.dataset;
-  if(b.id==='addBreakfast'){var k='Kafe & Kroasan (oferta e mëngjesit)';add(k+'|','Kafe & Kroasan','',  '1.99','drink');b.textContent='U shtua ✓';b.classList.add('ok');setTimeout(function(){b.textContent='+ Shto në porosi';b.classList.remove('ok')},1200);return}
   if(d.t){st.cat=d.t;renderMenu();if(d.go)$('menyja').scrollIntoView({behavior:'smooth'});return}
   if(d.s){st.size=+d.s;renderMenu();renderFeatured();return}
   if(d.p){var p=PIZZAS[+d.p];add(p[0]+'|'+SIZES[st.size],p[0],SIZES[st.size],p[3][st.size],'pizza');return}
