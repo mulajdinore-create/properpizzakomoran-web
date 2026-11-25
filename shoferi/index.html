@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shoferi – Proper Pizza</title>
+<meta name="theme-color" content="#0C0E12">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0C0E12;--card:#14171C;--line:#22262E;--text:#F5F5F2;--muted:#A9AEB9;--orange:#F28322;--blue:#66CCF2;--green:#1FA855}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto;padding:20px 16px 60px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;gap:12px}
+.top img{width:46px;height:46px}
+.disp{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;line-height:1}
+textarea{width:100%;min-height:130px;padding:12px 14px;border-radius:14px;border:1px solid #2A2F38;background:var(--card);color:var(--text);font:400 15px/1.45 Inter,sans-serif;resize:vertical}
+textarea:focus{outline:2px solid var(--blue);border-color:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:10px 12px;border-radius:14px;border:none;font:700 16px Inter,sans-serif;cursor:pointer;text-decoration:none;color:var(--text);background:#22262E}
+.o{background:var(--orange);color:#160E05}.g{background:var(--green);color:#fff}.b{background:var(--blue);color:#0C1A22}
+.btn[aria-disabled=true]{opacity:.35;pointer-events:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card.done{opacity:.5}
+.card .h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.card .name{font-weight:700;font-size:19px}
+.card .tot{font-weight:800;color:var(--orange);font-size:19px;white-space:nowrap}
+.card .addr{color:var(--muted);font-size:15px;line-height:1.45;white-space:pre-line}
+.card details{font-size:14px;color:var(--muted)}
+.card pre{white-space:pre-wrap;font:inherit;margin:8px 0 0}
+.empty{color:#7D8390;text-align:center;padding:24px 0;font-size:15px}
+.tag{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:#1E3A28;color:#7EE2A4}
+.hint{font-size:13px;color:#7D8390;line-height:1.5}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="top"><img src="/img/logo.webp" alt="Proper Pizza"><div><div class="disp" style="font-size:26px">Dërgesat</div><div style="font-size:13px;color:var(--muted)">Proper Pizza · për shoferin</div></div></div>
+
+<label for="txt" style="font-weight:600">Ngjite mesazhin e porosisë</label>
+<textarea id="txt" placeholder="Mbaj gishtin te mesazhi në WhatsApp → Copy → ngjite këtu"></textarea>
+<div class="row">
+<button type="button" class="btn" id="paste">📋 Ngjit</button>
+<button type="button" class="btn o" id="add">+ Shto dërgesën</button>
+</div>
+<p class="hint">Faqja e kupton vetë lokacionin, numrin e telefonit, adresën dhe totalin. Dërgesat ruhen vetëm në këtë telefon.</p>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+<h2 class="disp" style="margin:0;font-size:30px">Sot</h2>
+<button type="button" class="btn" id="clear" style="flex:none;min-height:40px;font-size:14px;padding:6px 14px">Fshi të dorëzuarat</button>
+</div>
+<div id="list"></div>
+</main>
+<script>
+(function(){
+var KEY='pp-dergesat';
+function $(i){return document.getElementById(i)}
+function esc(t){return String(t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+var orders=load();
+
+function parse(t){
+  var o={raw:t.trim(),time:Date.now(),done:false};
+  var m=t.match(/[-+]?\d{1,2}\.\d{3,}\s*,\s*[-+]?\d{1,3}\.\d{3,}/);
+  if(m){var p=m[0].split(',');o.lat=parseFloat(p[0]);o.lng=parseFloat(p[1])}
+  var mu=t.match(/https?:\/\/\S*(maps|goo\.gl|maps\.app)\S*/i); if(mu&&!m)o.mapUrl=mu[0];
+  var ph=t.replace(/https?:\/\/\S+/g,'').match(/(\+?383|00383|0)\s?4\d[\s\-]?\d{3}[\s\-]?\d{3}/);
+  if(ph){var d=ph[0].replace(/\D/g,'');if(d.indexOf('00383')===0)d=d.slice(2);if(d.charAt(0)==='0')d='383'+d.slice(1);if(d!=='38348733999')o.phone=d}
+  var a=t.match(/Adresa:\s*(.+)/i); if(a&&a[1].trim())o.addr=a[1].trim();
+  var s=t.match(/Shënim:\s*(.+)/i); if(s)o.addr=(o.addr?o.addr+'\n':'')+'Shënim: '+s[1].trim();
+  var tot=t.match(/Totali:\s*([\d.,]+\s*€)/i); if(tot)o.total=tot[1].replace(/\s/g,'');
+  var n=t.match(/Lokacioni për porosinë\s*–\s*(.+)/i)||t.match(/Emri:\s*(.+)/i); if(n)o.name=n[1].trim();
+  var items=t.split('\n').filter(function(l){return /^\s*\d+×/.test(l)}).map(function(l){return l.trim().replace(/\s+–\s+[\d.,]+€$/,'')});
+  if(items.length)o.items=items.join(', ');
+  return o;
+}
+function nav(o){if(o.lat!=null)return 'https://www.google.com/maps/dir/?api=1&destination='+o.lat+','+o.lng+'&travelmode=driving';if(o.mapUrl)return o.mapUrl;if(o.addr)return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(o.addr.split('\n')[0]+', Kosovë');return null}
+function render(){
+  var L=$('list');
+  if(!orders.length){L.innerHTML='<div class="empty">Ende asnjë dërgesë sot.</div>';return}
+  L.innerHTML=orders.map(function(o,i){
+    var t=new Date(o.time),hh=('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2),n=nav(o);
+    return '<div class="card'+(o.done?' done':'')+'" data-i="'+i+'">'+
+      '<div class="h"><span class="name">'+esc(o.name||('Dërgesa '+(orders.length-i)))+' <span style="color:#7D8390;font-weight:500;font-size:14px">· '+hh+'</span></span>'+(o.total?'<span class="tot">'+esc(o.total)+'</span>':'')+'</div>'+
+      (o.items?'<div style="font-size:15px">'+esc(o.items)+'</div>':'')+
+      (o.addr?'<div class="addr">'+esc(o.addr)+'</div>':'')+
+      (o.done?'<span class="tag" style="align-self:flex-start">✓ Dorëzuar</span>':'')+
+      '<div class="row">'+
+        '<a class="btn b" '+(n?'href="'+esc(n)+'" target="_blank" rel="noopener"':'aria-disabled="true"')+'>🧭 Navigo</a>'+
+        '<a class="btn" '+(o.phone?'href="tel:+'+o.phone+'"':'aria-disabled="true"')+'>📞 Thirr</a>'+
+        '<a class="btn" '+(o.phone?'href="https://wa.me/'+o.phone+'" target="_blank" rel="noopener"':'aria-disabled="true"')+'>💬</a>'+
+      '</div>'+
+      '<div class="row"><button type="button" class="btn '+(o.done?'':'g')+'" data-act="done">'+(o.done?'Ktheje si e pa dorëzuar':'✓ U dorëzua')+'</button><button type="button" class="btn" data-act="del" style="flex:0 0 auto" aria-label="Fshije">🗑</button></div>'+
+      '<details><summary>Mesazhi i plotë</summary><pre>'+esc(o.raw)+'</pre></details>'+
+    '</div>'}).join('');
+}
+$('add').addEventListener('click',function(){
+  var t=$('txt').value;if(!t.trim()){$('txt').focus();return}
+  orders.unshift(parse(t));save(orders);$('txt').value='';render();
+});
+$('paste').addEventListener('click',function(){
+  if(navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(function(t){$('txt').value=t},function(){$('txt').focus()})}else $('txt').focus();
+});
+$('clear').addEventListener('click',function(){orders=orders.filter(function(o){return !o.done});save(orders);render()});
+$('list').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-act]');if(!b)return;var i=+b.closest('.card').dataset.i;
+  if(b.dataset.act==='done')orders[i].done=!orders[i].done;
+  if(b.dataset.act==='del')orders.splice(i,1);
+  save(orders);render();
+});
+// fshij automatikisht dërgesat më të vjetra se 24 orë
+orders=orders.filter(function(o){return Date.now()-o.time<864e5});save(orders);render();
+})();
+</script>
+</body>
+</html>

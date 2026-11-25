@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dërgo lokacionin – Proper Pizza Komoran</title>
+<meta name="description" content="Dërgo lokacionin për porosinë tënde te Proper Pizza Komoran me një prekje.">
+<meta name="theme-color" content="#0C0E12">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+<meta property="og:title" content="Dërgo lokacionin – Proper Pizza">
+<meta property="og:description" content="Prek butonin dhe na e dërgo lokacionin për dërgesën.">
+<meta property="og:image" content="https://properpizzakomoran.com/img/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0C0E12;--card:#14171C;--line:#22262E;--text:#F5F5F2;--muted:#A9AEB9;--orange:#F28322;--blue:#66CCF2;--green:#1FA855}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:480px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:56px;height:56px}
+.disp{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;line-height:1}
+h1{margin:6px 0 0;font-size:46px}
+p{margin:0;color:var(--muted);font-size:17px;line-height:1.55}
+label{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+input{width:100%;min-height:52px;padding:12px 14px;border-radius:12px;border:1px solid #2A2F38;background:var(--card);color:var(--text);font:400 16px Inter,sans-serif}
+input:focus{outline:2px solid var(--blue);border-color:transparent}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:60px;border-radius:14px;border:none;font:700 18px Inter,sans-serif;cursor:pointer;text-decoration:none}
+.o{background:var(--orange);color:#160E05}
+.g{background:var(--green);color:#fff}
+.ghost{background:transparent;border:1px solid #2A2F38;color:var(--text);font-size:16px;min-height:52px}
+.status{border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.5;display:none}
+.status.ok{display:block;background:#10281A;border:1px solid #1E5A34;color:#9EEBB8}
+.status.err{display:block;background:#2A1414;border:1px solid #5A2626;color:#F5B5B5}
+.status.busy{display:block;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.small{font-size:14px;color:#7D8390;text-align:center}
+.small a{color:var(--blue)}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="brand"><img src="/img/logo.webp" alt="Proper Pizza"><div><div class="disp" style="font-size:24px">Proper Pizza</div><div style="font-size:12px;letter-spacing:2px;color:#9CA2AE">KOMORAN</div></div></div>
+
+<div>
+<h1 class="disp">Dërgo<br><span style="color:var(--orange)">lokacionin</span></h1>
+</div>
+<p>Faleminderit për porosinë! Që shoferi ta gjejë shtëpinë saktë, shkruaj emrin dhe prek butonin portokalli.</p>
+
+<div>
+<label for="emri">Emri</label>
+<input id="emri" type="text" autocomplete="name" placeholder="p.sh. Arben">
+</div>
+<div>
+<label for="tel">Telefoni <span style="color:#7D8390;font-weight:400">(opsional)</span></label>
+<input id="tel" type="tel" autocomplete="tel" inputmode="tel" placeholder="04X XXX XXX">
+</div>
+<div>
+<label for="shenim">Shënim për shoferin <span style="color:#7D8390;font-weight:400">(opsional)</span></label>
+<input id="shenim" type="text" placeholder="p.sh. shtëpia me portë të zezë">
+</div>
+
+<button type="button" class="btn o" id="loc"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span id="locTxt">Merr lokacionin tim</span></button>
+<div class="status" id="st" role="status" aria-live="polite"></div>
+<a class="btn g" id="send" href="#" target="_blank" rel="noopener" style="display:none">Dërgo në WhatsApp</a>
+
+<div id="manual" style="display:none;flex-direction:column;gap:12px">
+<label for="adresa" style="margin:0">Shkruaj adresën e plotë</label>
+<input id="adresa" type="text" autocomplete="street-address" placeholder="Fshati, rruga, afër çka">
+<a class="btn ghost" id="sendManual" href="#" target="_blank" rel="noopener">Dërgo adresën në WhatsApp</a>
+</div>
+
+<p class="small">Probleme? Na thirr: <a href="tel:+38348733999">048 733 999</a></p>
+</main>
+<script>
+(function(){
+var WA='38348733999';
+function $(i){return document.getElementById(i)}
+var loc=null;
+function msg(){
+  var e=$('emri').value.trim(),t=$('tel').value.trim(),s=$('shenim').value.trim(),a=$('adresa').value.trim();
+  var m='📍 Lokacioni për porosinë'+(e?' – '+e:'');
+  if(t)m+='\nTel: '+t;
+  if(loc)m+='\nLokacioni: https://maps.google.com/?q='+loc[0].toFixed(6)+','+loc[1].toFixed(6);
+  if(a)m+='\nAdresa: '+a;
+  if(s)m+='\nShënim: '+s;
+  return 'https://wa.me/'+WA+'?text='+encodeURIComponent(m);
+}
+function upd(){$('send').href=msg();$('sendManual').href=msg()}
+function status(cls,txt){var st=$('st');st.className='status '+cls;st.textContent=txt}
+function fail(txt){status('err',txt);$('manual').style.display='flex';$('locTxt').textContent='Provo prapë';upd()}
+var gT;
+$('loc').addEventListener('click',function(){
+  if(!$('emri').value.trim()){$('emri').focus();status('err','Shkruaj fillimisht emrin, që ta dimë për cilën porosi është.');return}
+  if(!navigator.geolocation){fail('Ky telefon nuk e jep lokacionin. Shkruaj adresën më poshtë.');return}
+  status('busy','Duke e gjetur lokacionin… Nëse telefoni pyet, zgjidh “Lejo”.');$('locTxt').textContent='Duke e gjetur…';
+  clearTimeout(gT);gT=setTimeout(function(){if(!loc)fail('Lokacioni nuk u mor. Lejoje lokacionin te telefoni dhe provo prapë, ose shkruaj adresën më poshtë.')},15000);
+  navigator.geolocation.getCurrentPosition(function(p){
+    clearTimeout(gT);loc=[p.coords.latitude,p.coords.longitude];
+    status('ok','✓ Lokacioni u gjet. Tani prek butonin e gjelbër dhe dërgoje mesazhin.');
+    $('locTxt').textContent='Lokacioni u gjet ✓';$('send').style.display='flex';upd();
+  },function(){clearTimeout(gT);fail('Lokacioni nuk u mor. Lejoje lokacionin te telefoni dhe provo prapë, ose shkruaj adresën më poshtë.')},{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+});
+['emri','tel','shenim','adresa'].forEach(function(i){$(i).addEventListener('input',upd)});
+upd();
+})();
+</script>
+</body>
+</html>

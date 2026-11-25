@@ -248,8 +248,9 @@ footer{border-top:1px solid #1C2027;background:#090B0E;padding:44px 0 24px;font-
 <div style="font-weight:800;font-size:18px;padding-bottom:4px">Porosia jote</div>
 <div id="citems"></div>
 <div style="padding:14px 0 10px">
+<div style="display:flex;gap:8px;margin-bottom:10px"><div style="flex:1"><label for="emri" style="font-weight:700;font-size:15px">Emri</label><input id="emri" class="inp" type="text" autocomplete="name" placeholder="Emri" style="margin-top:4px"></div><div style="flex:1"><label for="telefoni" style="font-weight:700;font-size:15px">Telefoni</label><input id="telefoni" class="inp" type="tel" inputmode="tel" autocomplete="tel" placeholder="04X XXX XXX" style="margin-top:4px"></div></div>
 <label for="adresa" style="font-weight:700;font-size:15px">Adresa e dërgesës</label>
-<div style="font-size:13px;color:#5B616C;margin:2px 0 8px">Lokacioni kërkohet që shoferi ta gjejë shtëpinë saktë. Nëse nuk merret, shkruaj adresën e plotë.</div>
+<div style="font-size:13px;color:#5B616C;margin:2px 0 8px">Numri i telefonit dhe lokacioni kërkohen që shoferi ta gjejë shtëpinë. Nëse lokacioni nuk merret, shkruaj adresën e plotë.</div>
 <input id="adresa" class="inp" type="text" placeholder="Rruga, nr. i shtëpisë, fshati" autocomplete="street-address">
 <button type="button" class="locbtn" id="locbtn"></button>
 <div id="locmsg" style="font-size:13px;color:#5B616C;margin-top:6px"></div>
@@ -281,6 +282,7 @@ var HOT=[['Espresso','1.00'],['Double Espresso','2.00'],['Makiato e vogël','1.0
 var EXTRAS=[['djathe','Djathë ekstra',0.5],['suxhuk','Suxhuk',0.5],['pershute','Përshutë',0.5],['kerpudha','Kërpudha',0.3],['veze','Vezë',0.3],['ullinj','Ullinj',0.3]];
 var COMBOS=[['Kombo Solo','Pica Proper 30 cm + Coca Cola 0.33L','proper','6.50','7.00'],['Kombo Familja','Pica Proper 60 cm + Coca Cola 1.25L','macho','18.00','18.80'],['Kombo Sandwich','Sandwich Proper + Ice Tea 0.33L','sandwich','3.50','4.00']];
 
+var ORDER='#'+(function(){var d=new Date();return ('0'+d.getHours()).slice(-2)+('0'+d.getMinutes()).slice(-2)+'-'+Math.floor(10+Math.random()*90)})();
 var st={cat:'pica',size:1,cart:{},order:[],open:false,loc:null,locState:'',added:null};
 function $(id){return document.getElementById(id)}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -345,13 +347,13 @@ function renderCart(){
   var ls=st.locState,lb=$('locbtn');
   lb.className='locbtn'+(ls==='ok'?' ok':'');
   lb.innerHTML='<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>'+(ls==='busy'?'Duke e gjetur…':ls==='ok'?'Vendndodhja u shtua ✓':'Përdor vendndodhjen time');
-  var typed=$('adresa').value.trim().length>=5, can=!!st.loc||(ls==='err'&&typed);
-  $('send').innerHTML=can?'<a class="btn wa" target="_blank" rel="noopener" href="'+waLink(total)+'">Dërgo në WhatsApp</a>':'<button type="button" class="btn dark" id="needloc">Shto lokacionin për të porositur</button>';
+  var typed=$('adresa').value.trim().length>=5, telOk=$('telefoni').value.replace(/\D/g,'').length>=9, can=telOk&&(!!st.loc||(ls==='err'&&typed));
+  $('send').innerHTML=(!telOk&&(st.loc||(ls==='err'&&typed)))?'<span style="font-size:14px;color:#B4232A;font-weight:600">Shkruaj numrin e telefonit</span>':can?'<a class="btn wa" target="_blank" rel="noopener" href="'+waLink(total)+'">Dërgo në WhatsApp</a>':'<button type="button" class="btn dark" id="needloc">Shto lokacionin për të porositur</button>';
 }
 function waLink(total){
   var lines=st.order.map(function(k){var it=st.cart[k],n=it.note.trim(),ex=it.extras.map(function(id){return EXTRAS.filter(function(x){return x[0]===id})[0][1].toLowerCase()});
     return it.qty+'× '+it.name+(it.size?' ('+it.size+')':'')+' – '+eur(unit(it)*it.qty)+(ex.length?'\n   + '+ex.join(', '):'')+(n?'\n   ↳ '+n:'')});
-  var m='Përshëndetje Proper Pizza! Dua të porosis:\n'+lines.join('\n')+'\n\nTotali: '+eur(total)+'\nAdresa: '+$('adresa').value.trim()+(st.loc?'\nLokacioni: https://maps.google.com/?q='+st.loc[0].toFixed(6)+','+st.loc[1].toFixed(6):'');
+  var m='Përshëndetje Proper Pizza! Porosia '+ORDER+'\nEmri: '+$('emri').value.trim()+'\nTel: '+$('telefoni').value.trim()+'\n\n'+lines.join('\n')+'\n\nTotali: '+eur(total)+'\nAdresa: '+$('adresa').value.trim()+(st.loc?'\nLokacioni: https://maps.google.com/?q='+st.loc[0].toFixed(6)+','+st.loc[1].toFixed(6):'');
   return 'https://wa.me/'+WA+'?text='+encodeURIComponent(m);
 }
 var gT;
@@ -386,7 +388,7 @@ document.addEventListener('click',function(e){
 });
 document.addEventListener('input',function(e){
   if(e.target.classList.contains('note')){var k=e.target.closest('.ci').dataset.k;if(st.cart[k])st.cart[k].note=e.target.value;updLink()}
-  if(e.target.id==='adresa'){var can=!!st.loc||(st.locState==='err'&&e.target.value.trim().length>=5),has=!!$('send').querySelector('a');if(can!==has)renderCart();else updLink()}
+  if(e.target.id==='adresa'||e.target.id==='telefoni'||e.target.id==='emri'){var telOk=$('telefoni').value.replace(/\D/g,'').length>=9,can=telOk&&(!!st.loc||(st.locState==='err'&&$('adresa').value.trim().length>=5)),has=!!$('send').querySelector('a');if(can!==has)renderCart();else updLink()}
 });
 renderAll();
 })();
