@@ -1,0 +1,24 @@
+{
+  "name": "Proper Pizza – Dërgesat",
+  "short_name": "Dërgesat",
+  "description": "Lista e dërgesave për shoferët e Proper Pizza Komoran",
+  "id": "/shoferi/",
+  "start_url": "/shoferi/",
+  "scope": "/shoferi/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0C0E12",
+  "theme_color": "#0C0E12",
+  "lang": "sq",
+  "icons": [
+    {"src": "/shoferi/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/shoferi/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/shoferi/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "/shoferi/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "share_target": {
+    "action": "/shoferi/",
+    "method": "GET",
+    "params": {"title": "title", "text": "text", "url": "url"}
+  }
+}

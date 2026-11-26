@@ -7,7 +7,8 @@
 <meta name="theme-color" content="#0C0E12">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="/img/favicon.png">
-<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/shoferi/icon-192.png">
+<link rel="manifest" href="/shoferi/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -42,6 +43,7 @@ textarea:focus{outline:2px solid var(--blue);border-color:transparent}
 <main class="wrap">
 <div class="top"><img src="/img/logo.webp" alt="Proper Pizza"><div><div class="disp" style="font-size:26px">Dërgesat</div><div style="font-size:13px;color:var(--muted)">Proper Pizza · për shoferin</div></div></div>
 
+<button type="button" class="btn o" id="install" style="display:none;flex:none">⬇ Instalo aplikacionin</button>
 <label for="txt" style="font-weight:600">Ngjite mesazhin e porosisë</label>
 <textarea id="txt" placeholder="Mbaj gishtin te mesazhi në WhatsApp → Copy → ngjite këtu"></textarea>
 <div class="row">
@@ -114,6 +116,15 @@ $('list').addEventListener('click',function(e){
   if(b.dataset.act==='del')orders.splice(i,1);
   save(orders);render();
 });
+// instalimi si aplikacion
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/shoferi/sw.js',{scope:'/shoferi/'}).catch(function(){})}
+var dp=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;$('install').style.display='flex'});
+$('install').addEventListener('click',function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;$('install').style.display='none'})});
+window.addEventListener('appinstalled',function(){$('install').style.display='none'});
+// mesazh i ndarë nga WhatsApp me "Share" → shtohet vetë
+(function(){var q=new URLSearchParams(location.search),t=[q.get('title'),q.get('text'),q.get('url')].filter(Boolean).join('\n');
+  if(t.trim()){orders.unshift(parse(t));save(orders);history.replaceState(null,'','/shoferi/')}})();
 // fshij automatikisht dërgesat më të vjetra se 24 orë
 orders=orders.filter(function(o){return Date.now()-o.time<864e5});save(orders);render();
 })();
